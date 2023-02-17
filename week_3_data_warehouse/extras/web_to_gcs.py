@@ -2,7 +2,7 @@ import io
 import os
 import requests
 import pandas as pd
-import pyarrow
+from concurrent.futures import ThreadPoolExecutor
 from google.cloud import storage
 
 """
@@ -15,7 +15,7 @@ Pre-reqs:
 # services = ['fhv','green','yellow']
 init_url = 'https://nyc-tlc.s3.amazonaws.com/trip+data/'
 # switch out the bucketname
-BUCKET = os.environ.get("GCP_GCS_BUCKET", "dtc-data-lake-bucketname")
+BUCKET = os.environ.get("GCP_GCS_BUCKET", "dbt-ny-taxi-123")
 
 
 def upload_to_gcs(bucket, object_name, local_file):
@@ -32,35 +32,31 @@ def upload_to_gcs(bucket, object_name, local_file):
     blob = bucket.blob(object_name)
     blob.upload_from_filename(local_file)
 
+def load_csv(i, year, service):
+    # sets the month part of the file_name string
+    month = '0'+str(i+1)
+    month = month[-2:]
+
+    # csv file_name 
+    file_name = f"{service}_tripdata_{year}-{month:02}.csv.gz"
+
+    # download it using requests via a pandas df
+    request_url = 'https://github.com/DataTalksClub/nyc-tlc-data/releases/download/{color}/{file_name}'
+    r = requests.get(request_url)
+    pd.DataFrame(io.StringIO(r.text)).to_csv(file_name)
+    print(f"Local: {file_name}")
+
+    # upload it to gcs 
+    upload_to_gcs(BUCKET, f"{service}/{file_name}", file_name)
+    print(f"GCS: {service}/{file_name}")
 
 def web_to_gcs(year, service):
-    for i in range(12):
-        
-        # sets the month part of the file_name string
-        month = '0'+str(i+1)
-        month = month[-2:]
-
-        # csv file_name 
-        file_name = service + '_tripdata_' + year + '-' + month + '.csv'
-
-        # download it using requests via a pandas df
-        request_url = init_url + file_name
-        r = requests.get(request_url)
-        pd.DataFrame(io.StringIO(r.text)).to_csv(file_name)
-        print(f"Local: {file_name}")
-
-        # read it back into a parquet file
-        df = pd.read_csv(file_name)
-        file_name = file_name.replace('.csv', '.parquet')
-        df.to_parquet(file_name, engine='pyarrow')
-        print(f"Parquet: {file_name}")
-
-        # upload it to gcs 
-        upload_to_gcs(BUCKET, f"{service}/{file_name}", file_name)
-        print(f"GCS: {service}/{file_name}")
-
+    print(f'{year} - {service}')
+    with ThreadPoolExecutor(max_workers=12) as executor:
+        for i in range(12):
+            executor.submit(load_csv, i, year, service)
 
 web_to_gcs('2019', 'green')
 web_to_gcs('2020', 'green')
-# web_to_gcs('2019', 'yellow')
-# web_to_gcs('2020', 'yellow')
+web_to_gcs('2019', 'yellow')
+web_to_gcs('2020', 'yellow')
