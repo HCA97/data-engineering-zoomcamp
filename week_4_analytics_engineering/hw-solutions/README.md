@@ -27,7 +27,7 @@
 3. Copy use dbt to create fact tables [dbt-code](https://github.com/HCA97/de-zoomcamp-dbt)
     ```sql
     SELECT COUNT(*) AS number_fact_trips
-    FROM `quiet-dimension-374920.dbt_test.fact_trips`
+    FROM `production.fact_trips`
     WHERE EXTRACT(YEAR FROM pickup_datetime) IN (2020, 2019)
     ```
 
@@ -39,12 +39,21 @@ number_fact_trips
 
 ## Q2
 
+[Dashboard URL](https://lookerstudio.google.com/reporting/fcb617ad-3446-472a-9cac-7b7bf2fb2716)
+
+
+![Alt text](dashboard.png?raw=true "Title")
+
+
 ## Q3
-```sql
-SELECT COUNT(*) AS number_stg_fhv_trips
-FROM `quiet-dimension-374920.dbt_test.stg_fhv_tripdata`
-WHERE EXTRACT(YEAR FROM pickup_datetime) IN (2019)
-```
+
+1. Use DBT to create tables
+2. Run
+    ```sql
+    SELECT COUNT(*) AS number_stg_fhv_trips
+    FROM `production.stg_fhv_tripdata`
+    WHERE EXTRACT(YEAR FROM pickup_datetime) IN (2019)
+    ```
 Result
 ```
 number_stg_fhv_trips 
@@ -53,13 +62,21 @@ number_stg_fhv_trips
 
 ## Q4
 
-```sql
-SELECT COUNT(*) AS number_fact_fhv_trips
-FROM `quiet-dimension-374920.dbt_test.fact_fhv_trips`
-WHERE EXTRACT(YEAR FROM pickup_datetime) IN (2019)
-```
+1. Use DBT to create tables
+2. Run
+    ```sql
+    SELECT COUNT(*) AS number_fact_fhv_trips
+    FROM `production.fact_fhv_trips`
+    WHERE EXTRACT(YEAR FROM pickup_datetime) IN (2019)
+    ```
+    
 Result
 ```
 number_fact_fhv_trips 
 22998722
 ```
+
+
+## Q5
+
+[Dashboard URL](https://lookerstudio.google.com/reporting/fcb617ad-3446-472a-9cac-7b7bf2fb2716)
