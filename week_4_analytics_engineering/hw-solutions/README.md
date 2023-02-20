@@ -42,7 +42,7 @@ number_fact_trips
 [Dashboard URL](https://lookerstudio.google.com/reporting/fcb617ad-3446-472a-9cac-7b7bf2fb2716)
 
 
-![Alt text](dashboard.png?raw=true "Title")
+![Alt text](dashboards.png?raw=true "Title")
 
 
 ## Q3
@@ -69,7 +69,7 @@ number_stg_fhv_trips
     FROM `production.fact_fhv_trips`
     WHERE EXTRACT(YEAR FROM pickup_datetime) IN (2019)
     ```
-    
+
 Result
 ```
 number_fact_fhv_trips 
