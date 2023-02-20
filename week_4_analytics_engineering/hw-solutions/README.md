@@ -80,3 +80,5 @@ number_fact_fhv_trips
 ## Q5
 
 [Dashboard URL](https://lookerstudio.google.com/reporting/fcb617ad-3446-472a-9cac-7b7bf2fb2716)
+
+![Alt text](dashboards.png?raw=true "Title")
